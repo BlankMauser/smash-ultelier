@@ -1,0 +1,9 @@
+/target/
+/misc/
+
+# Local-only workspace files
+reference/
+references/
+scripts/
+.zed/
+.claude/

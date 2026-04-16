@@ -1,0 +1,7 @@
+[package]
+name = "ssbusync-guest"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+skyline = { git = "https://github.com/ultimate-research/skyline-rs" }
