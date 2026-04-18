@@ -3,11 +3,10 @@ Smash Ultelier is primarily an interface for smash plugins to the game's render 
 Ideally multiple plugins should be able to talk to the same `ssbusync` without crashing but its
 recommended to only have one plugin interface with the buffer settings.
 
-Most of the time, you should treat `SmashUltelier` as a code library, not as a standalone plugin.
+Most users should treat `SmashUltelier` as a code library, not as a standalone plugin.
 
 ## Typical usage
 
-You only need the shared `ssbusync` control API. 
 Import `ultelier` as a library and disable the standalone plugin feature:
 
 ```toml
