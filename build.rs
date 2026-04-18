@@ -3,20 +3,8 @@ use std::path::{Path, PathBuf};
 
 fn candidate_dirs(manifest_dir: &Path) -> [PathBuf; 3] {
     [
+        manifest_dir.join("deps"),
         manifest_dir.join("lib"),
-        manifest_dir
-            .join("..")
-            .join("HDR_DEV")
-            .join("imgui-smash")
-            .join("examples")
-            .join("ingame-dev")
-            .join("lib"),
-        manifest_dir
-            .join("..")
-            .join("imgui-smash")
-            .join("examples")
-            .join("ingame-dev")
-            .join("lib"),
     ]
 }
 
@@ -28,6 +16,10 @@ fn emit_link_search(dir: &Path) {
 fn main() {
     let manifest_dir = PathBuf::from(env::var("CARGO_MANIFEST_DIR").expect("missing manifest dir"));
     println!("cargo:rerun-if-env-changed=IMGUI_SMASH_LIB_DIR");
+
+    if env::var_os("CARGO_FEATURE_PLUGIN").is_none() {
+        return;
+    }
 
     if let Ok(dir) = env::var("IMGUI_SMASH_LIB_DIR") {
         let dir = PathBuf::from(dir);
@@ -49,6 +41,6 @@ fn main() {
     }
 
     panic!(
-        "could not find libimgui_smash.a; set IMGUI_SMASH_LIB_DIR or place the archive in ./lib"
+        "could not find libimgui_smash.a; set IMGUI_SMASH_LIB_DIR or place the archive in ./deps"
     );
 }

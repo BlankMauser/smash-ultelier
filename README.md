@@ -1,18 +1,18 @@
-Smash Ultelier is primarily an interface for smash plugins to the GPU, but will hopefully grow into a tool for quicker reverse engineering of smash ultimate data structs.
+Smash Ultelier is primarily an interface for smash plugins to the game's render loop but will hopefully grow into a tool for quicker reverse engineering of smash ultimate data structs.
 
-Multiple plugins should be able to talk to the same `ssbusync`
-and `imgui-smash` without crashing.
+Ideally multiple plugins should be able to talk to the same `ssbusync` without crashing but its
+recommended to only have one plugin interface with the buffer settings.
 
 Most of the time, you should treat `SmashUltelier` as a code library, not as a standalone plugin.
 
 ## Typical usage
 
-If another plugin only needs the shared `ssbusync` control API, depend on
-`ultelier` as a library and disable the standalone plugin pieces:
+You only need the shared `ssbusync` control API. 
+Import `ultelier` as a library and disable the standalone plugin feature:
 
 ```toml
 [dependencies]
-ultelier = { path = "../SmashUltelier", default-features = false, features = ["sync-guest"] }
+ultelier = { path = "", default-features = false, features = ["sync-guest"] }
 ```
 
 Then use the re-exported guest API:
@@ -26,41 +26,27 @@ pub fn enable_dynamic_triple_buffer() {
 }
 ```
 
-If you are working directly with the guest crate instead of the root re-export:
-
-```toml
-[dependencies]
-ssbusync_guest = { package = "ssbusync-guest", path = "../SmashUltelier/crates/sync-guest" }
-```
-
 ## Runtime double/triple switching
 
 This is the main reason to use the library.
 
-Use `set_buffer_mode(...)` for real runtime transitions:
+Use `set_buffer_mode(...)` to switch between 3 delay and 4 delay (better performance).
+Currently going back to default delay is buggy and not supported. It is unlikely I make
+a fix for that personally.
+
+Recommended startup from a guest plugin:
 
 ```rust
 use ultelier::sync_guest::{self as sync, BufferMode, IndexBackend};
 
-#[derive(Default)]
-struct BufferController {
-    last_mode: Option<BufferMode>,
-}
-
-impl BufferController {
-    fn apply(&mut self, desired: BufferMode) {
-        let _ = sync::set_index_backend(IndexBackend::Dynamic);
-
-        if self.last_mode == Some(desired) {
-            return;
-        }
-
-        if sync::set_buffer_mode(desired) == Some(true) {
-            self.last_mode = Some(desired);
-        }
-    }
+pub fn initialize_sync_control() {
+    let _ = sync::set_index_backend(IndexBackend::Dynamic);
+    let _ = sync::set_buffer_mode(BufferMode::Triple);
 }
 ```
+
+IndexBackend has to be Dynamic and triple buffer must start on. Otherwise you will not
+have the memory allocated to switch between triple/double buffers.
 
 Basic toggle example:
 
@@ -85,41 +71,38 @@ let _ = ultelier::sync_guest::set_triple_buffer_enabled(true);
 let _ = ultelier::sync_guest::set_triple_buffer_enabled(false);
 ```
 
-## Important startup requirement
+That keeps the runtime in the correct mode for later triple/double transitions.
 
-If you want to switch between triple and double buffer at runtime, `ssbusync`
-must start with triple buffering enabled.
+## Callbacks
 
-Reason:
+`sync_guest::events` is the subscription API for runtime change notifications.
 
-- triple buffer needs the third window texture to be allocated up front
-- switching from triple -> double at runtime is fine
-- switching from double -> triple later is not safe if the third texture was
-  never allocated during startup
+- `set_*` / `set_typed_*` returns `bool`: `true` if the callback was registered with the remote runtime, `false` means registration failed.
+- The callback itself does not return a success value. It is just invoked when the state changes.
 
-In practice:
-
-- start `ssbusync` in triple-buffer mode
-- use the dynamic backend
-- then switch down to double buffer at runtime when you want lower latency
-
-Recommended startup sequence from a guest plugin:
+Event subscription example:
 
 ```rust
-use ultelier::sync_guest::{self as sync, BufferMode, IndexBackend};
+use ultelier::sync_guest::{self as sync, events, BufferMode, IndexBackend};
 
-pub fn initialize_sync_control() {
-    let _ = sync::set_index_backend(IndexBackend::Dynamic);
-    let _ = sync::set_buffer_mode(BufferMode::Triple);
+extern "C" fn on_buffer_mode_changed(mode: BufferMode) {
+    skyline::println!("buffer mode changed to {:?}", mode);
+}
+
+extern "C" fn on_index_backend_changed(mode: IndexBackend) {
+    skyline::println!("index backend changed to {:?}", mode);
+}
+
+pub fn subscribe_to_sync_callbacks() -> bool {
+    events::set_typed_buffer_mode_changed(on_buffer_mode_changed)
+        && events::set_typed_index_backend_changed(on_index_backend_changed)
 }
 ```
 
-That keeps the runtime in the correct mode for later triple/double transitions.
+To unsubscribe:
 
-## Notes
-
-- `set_frame_index_mode(...)` is intentionally internal/debug-only; normal code
-  should use `set_buffer_mode(...)`
-- if `ssbusync` is not loaded, guest calls return `None`
-- if you need a local debug UI, that lives behind the `plugin` feature, but that
-  is not the primary purpose of this repo
+```rust
+let _ = ultelier::sync_guest::events::clear_typed_buffer_mode_changed();
+let _ = ultelier::sync_guest::events::clear_typed_index_backend_changed();
+let _ = ultelier::sync_guest::events::clear_typed_vsync_changed();
+```
