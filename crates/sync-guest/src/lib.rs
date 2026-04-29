@@ -143,6 +143,7 @@ pub enum FrameIndexMode {
     Double = 1,
     Triple = 2,
     Vanilla = 3,
+    Frozen = 4,
 }
 
 impl FrameIndexMode {
@@ -162,7 +163,8 @@ impl FrameIndexMode {
             1 => Some(Self::Double),
             2 => Some(Self::Triple),
             3 => Some(Self::Vanilla),
-            _ => Some(Self::Triple),
+            4 => Some(Self::Frozen),
+            _ => None,
         }
     }
 }

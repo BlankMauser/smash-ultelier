@@ -35,7 +35,6 @@ fn panic_hook() {
 #[skyline::main(name = "ultelier")]
 pub fn main() {
     panic_hook();
-    #[cfg(feature = "sync-guest")]
     sync_guest::runtime::install_auto_profile_switcher();
     console::install();
 }

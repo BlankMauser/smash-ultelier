@@ -3,15 +3,17 @@ Smash Ultelier is primarily an interface for smash plugins to the game's render 
 Ideally multiple plugins should be able to talk to the same `ssbusync` without crashing but its
 recommended to only have one plugin interface with the buffer settings.
 
-Most users should treat `SmashUltelier` as a code library, not as a standalone plugin.
+Most of the time, you should treat `SmashUltelier` as a code library, not as a standalone plugin.
+The default feature set is library-only; the ImGui console is opt-in with the `plugin` feature.
 
 ## Typical usage
 
-Import `ultelier` as a library and disable the standalone plugin feature:
+You only need the shared `ssbusync` control API.
+Import `ultelier` as a library:
 
 ```toml
 [dependencies]
-ultelier = { path = "", default-features = false, features = ["sync-guest"] }
+ultelier = { git = "https://github.com/BlankMauser/smash-ultelier.git", branch = "clean", default-features = false, features = ["sync-guest"] }
 ```
 
 Then use the re-exported guest API:

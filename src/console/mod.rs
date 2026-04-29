@@ -42,6 +42,7 @@ const BUTTON_FRAME_IMMEDIATE: &[u8] = b"Frame Immediate\0";
 const BUTTON_FRAME_DOUBLE: &[u8] = b"Frame Double\0";
 const BUTTON_FRAME_TRIPLE: &[u8] = b"Frame Triple\0";
 const BUTTON_FRAME_VANILLA: &[u8] = b"Frame Vanilla\0";
+const BUTTON_FRAME_FROZEN: &[u8] = b"Frame Frozen\0";
 
 const CHECKBOX_SHOW_MOUSE: &[u8] = b"Show Mouse\0";
 const CHECKBOX_AUTO_SCROLL: &[u8] = b"Auto Scroll\0";
@@ -426,7 +427,7 @@ unsafe fn render_quick_actions_section(actions: &mut Vec<Action>, state: &mut Co
 
 unsafe fn render_command_section(actions: &mut Vec<Action>, state: &mut ConsoleState) {
     igSeparatorText(SECTION_COMMAND.as_ptr() as _);
-    text_line("commands: help, refresh, clear, mouse on/off, vsync on/off, pacer on/off, buffer double/triple, backend dynamic/static, frame immediate/double/triple/vanilla");
+    text_line("commands: help, refresh, clear, mouse on/off, vsync on/off, pacer on/off, buffer double/triple, backend dynamic/static, frame immediate/double/triple/vanilla/frozen");
 
     let submitted = igInputTextWithHint(
         COMMAND_LABEL.as_ptr() as _,
@@ -574,7 +575,7 @@ fn run_command(command: String) {
                 state.push_log("help: vsync on/off | pacer on/off");
                 state.push_log("help: buffer double/triple");
                 state.push_log("help: backend dynamic/static");
-                state.push_log("help: frame immediate/double/triple/vanilla");
+                state.push_log("help: frame immediate/double/triple/vanilla/frozen");
             });
         }
         "refresh" | "status" => refresh_snapshot(true),
@@ -620,7 +621,8 @@ fn run_command(command: String) {
             Some("double") => perform_action(Action::SetFrameIndexMode(FrameIndexMode::Double)),
             Some("triple") => perform_action(Action::SetFrameIndexMode(FrameIndexMode::Triple)),
             Some("vanilla") => perform_action(Action::SetFrameIndexMode(FrameIndexMode::Vanilla)),
-            _ => push_invalid_command("frame expects immediate/double/triple/vanilla"),
+            Some("frozen") => perform_action(Action::SetFrameIndexMode(FrameIndexMode::Frozen)),
+            _ => push_invalid_command("frame expects immediate/double/triple/vanilla/frozen"),
         },
         _ => push_invalid_command("unknown command; type 'help'"),
     }
