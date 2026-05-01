@@ -128,7 +128,7 @@ pub fn install_auto_profile_switcher() {
 /// ```ignore
 /// #[skyline::main(name = "my_plugin")]
 /// pub fn main() {
-///     ssbusync_guest::runtime::install_auto_profile_switcher();
+///     ssbusync_guest::runtime::install_menu_hooks();
 /// }
 /// ```
 pub fn install_menu_hooks() {
