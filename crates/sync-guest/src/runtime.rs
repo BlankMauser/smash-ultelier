@@ -108,6 +108,17 @@ unsafe fn on_main_menu(_: &InlineCtx) {
     let _ = profile::apply_rest();
 }
 
+/// Installs automatic overclock profiler
+pub fn install_auto_profile_switcher() {
+    if INSTALLED.swap(true, Ordering::AcqRel) {
+        return;
+    }
+
+    let _ = profile::sync_from_remote();
+
+    install_menu_hooks();
+}
+
 /// Installs Skyline hooks that automatically map menu, singles, and FFA game
 /// states onto the configured docked-profile table.
 ///
@@ -120,13 +131,7 @@ unsafe fn on_main_menu(_: &InlineCtx) {
 ///     ssbusync_guest::runtime::install_auto_profile_switcher();
 /// }
 /// ```
-pub fn install_auto_profile_switcher() {
-    if INSTALLED.swap(true, Ordering::AcqRel) {
-        return;
-    }
-
-    let _ = profile::sync_from_remote();
-
+pub fn install_menu_hooks() {
     skyline::install_hooks!(
         css_player_count_changed,
         on_match_start,
