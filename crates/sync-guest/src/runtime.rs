@@ -1,4 +1,4 @@
-use super::profile::{self, DockedProfile};
+use crate::profile::{self, DockedProfile};
 use skyline::hooks::InlineCtx;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 

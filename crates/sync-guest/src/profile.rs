@@ -1,5 +1,5 @@
-use super::callback::Callback;
-use super::OverclockProfile;
+use crate::callback::Callback;
+use crate::OverclockProfile;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Mutex;
 
@@ -311,7 +311,7 @@ pub fn invalidate_cache() {
 /// let remote = ultelier::sync_guest::profile::sync_from_remote();
 /// ```
 pub fn sync_from_remote() -> Option<Option<OverclockProfile>> {
-    let result = super::current_overclock_profile()?;
+    let result = crate::current_overclock_profile()?;
     let state = result.and_then(|profile| docked_profile_map().state_for(profile));
     cache_state(state, result);
     Some(result)
@@ -351,7 +351,7 @@ pub fn apply_docked_profile(state: DockedProfile) -> ApplyResult {
         }
     }
 
-    match super::set_overclock_profile(mapped) {
+    match crate::set_overclock_profile(mapped) {
         Some(true) => {
             cache_state(Some(state), Some(mapped));
             invoke_changed_callback(state);

@@ -45,6 +45,7 @@ dependencies = [
 [[package]]
 name = "ncommon"
 version = "0.1.0"
+source = "git+https://github.com/BlankMauser/nsuite.git#726fc8990f7ab4c2abb317c09c57846bcf8b7b33"
 dependencies = [
  "locks",
  "skyline",
@@ -53,6 +54,7 @@ dependencies = [
 [[package]]
 name = "ngpu"
 version = "0.1.0"
+source = "git+https://github.com/BlankMauser/nsuite.git#726fc8990f7ab4c2abb317c09c57846bcf8b7b33"
 dependencies = [
  "locks",
  "ncommon",
@@ -62,6 +64,7 @@ dependencies = [
 [[package]]
 name = "ninput"
 version = "0.1.0"
+source = "git+https://github.com/BlankMauser/nsuite.git#726fc8990f7ab4c2abb317c09c57846bcf8b7b33"
 dependencies = [
  "ncommon",
  "ringbuf",
@@ -71,6 +74,7 @@ dependencies = [
 [[package]]
 name = "nmem"
 version = "0.1.0"
+source = "git+https://github.com/BlankMauser/nsuite.git#726fc8990f7ab4c2abb317c09c57846bcf8b7b33"
 dependencies = [
  "locks",
  "ncommon",
@@ -89,6 +93,7 @@ dependencies = [
 [[package]]
 name = "nsuite"
 version = "0.1.0"
+source = "git+https://github.com/BlankMauser/nsuite.git#726fc8990f7ab4c2abb317c09c57846bcf8b7b33"
 dependencies = [
  "locks",
  "ncommon",
@@ -102,6 +107,7 @@ dependencies = [
 [[package]]
 name = "ntask"
 version = "0.1.0"
+source = "git+https://github.com/BlankMauser/nsuite.git#726fc8990f7ab4c2abb317c09c57846bcf8b7b33"
 dependencies = [
  "locks",
  "skyline",
@@ -115,9 +121,9 @@ checksum = "c33a9471896f1c69cecef8d20cbe2f7accd12527ce60845ff44c153bb2a21b49"
 
 [[package]]
 name = "portable-atomic-util"
-version = "0.2.6"
+version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "091397be61a01d4be58e7841595bd4bfedb15f1cd54977d79b8271e94ed799a3"
+checksum = "c2a106d1259c23fac8e543272398ae0e3c0b8d33c88ed73d0cc71b0f1d902618"
 dependencies = [
  "portable-atomic",
 ]

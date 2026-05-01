@@ -1,17 +1,16 @@
-#[cfg(feature = "plugin")]
+#[cfg(feature = "console")]
 pub mod common;
-#[cfg(feature = "plugin")]
+#[cfg(feature = "console")]
 pub mod console;
 
 #[cfg(feature = "sync-guest")]
-pub mod sync_guest;
+pub use ssbusync_guest as sync_guest;
 
-#[cfg(feature = "plugin")]
+#[cfg(feature = "console")]
 #[link(name = "imgui_smash")]
 unsafe extern "C" {}
 
-#[cfg(feature = "plugin")]
-fn panic_hook() {
+pub fn panic_hook() {
     std::panic::set_hook(Box::new(|info| {
         let location = info.location().unwrap();
         let msg = match info.payload().downcast_ref::<&'static str>() {
@@ -31,10 +30,12 @@ fn panic_hook() {
     }));
 }
 
-#[cfg(feature = "plugin")]
+#[cfg(feature = "no-dep")]
 #[skyline::main(name = "ultelier")]
 pub fn main() {
     panic_hook();
+    #[cfg(feature = "auto-profile-switcher")]
     sync_guest::runtime::install_auto_profile_switcher();
+    #[cfg(feature = "console")]
     console::install();
 }

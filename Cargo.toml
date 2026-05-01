@@ -1,3 +1,7 @@
+[workspace]
+members = ["crates/sync-guest"]
+resolver = "2"
+
 [package]
 name = "ultelier"
 version = "0.1.0"
@@ -11,14 +15,17 @@ crate-type = ["cdylib", "rlib"]
 
 [features]
 default = ["sync-guest"]
-plugin = ["console", "sync-guest"]
+no-dep = ["sync-guest"]
+plugin = ["no-dep", "console"]
 console = ["dep:imgui-api", "dep:nsuite"]
-sync-guest = []
+auto-profile-switcher = ["sync-guest"]
+sync-guest = ["dep:ssbusync_guest"]
 
 [dependencies]
 imgui-api = { git = "https://github.com/Coolsonickirby/imgui-api.git", optional = true }
-nsuite = { path = "../VsyncPatchedHDR/ssbu-less-lag/nsuite", default-features = false, optional = true }
+nsuite = { git = "https://github.com/BlankMauser/nsuite.git", default-features = false, optional = true }
 skyline = { git = "https://github.com/ultimate-research/skyline-rs" }
+ssbusync_guest = { package = "ssbusync-guest", path = "crates/sync-guest", optional = true }
 
 [patch.crates-io]
 skyline = { git = "https://github.com/ultimate-research/skyline-rs" }
