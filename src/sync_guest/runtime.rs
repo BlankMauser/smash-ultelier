@@ -1,4 +1,4 @@
-use crate::profile::{self, DockedProfile};
+use super::profile::{self, DockedProfile};
 use skyline::hooks::InlineCtx;
 use std::sync::atomic::{AtomicBool, AtomicU32, Ordering};
 
@@ -58,7 +58,7 @@ fn classify_active_match() -> DockedProfile {
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::runtime;
+/// use ultelier::sync_guest::runtime;
 ///
 /// let state = runtime::current_runtime_profile();
 /// skyline::println!("runtime state = {:?}", state);
@@ -128,7 +128,7 @@ pub fn install_auto_profile_switcher() {
 /// ```ignore
 /// #[skyline::main(name = "my_plugin")]
 /// pub fn main() {
-///     ssbusync_guest::runtime::install_menu_hooks();
+///     ultelier::sync_guest::runtime::install_menu_hooks();
 /// }
 /// ```
 pub fn install_menu_hooks() {

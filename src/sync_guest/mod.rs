@@ -60,7 +60,7 @@ impl EnvironmentFlags {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::EnvironmentFlags;
+    /// use ultelier::sync_guest::EnvironmentFlags;
     ///
     /// let flags = EnvironmentFlags::new(EnvironmentFlags::TRIPLE_ENABLED);
     /// assert_eq!(flags.bits(), EnvironmentFlags::TRIPLE_ENABLED);
@@ -74,7 +74,7 @@ impl EnvironmentFlags {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::EnvironmentFlags;
+    /// use ultelier::sync_guest::EnvironmentFlags;
     ///
     /// let flags = EnvironmentFlags::new(EnvironmentFlags::TRIPLE_ENABLED);
     /// assert!(flags.contains(EnvironmentFlags::TRIPLE_ENABLED));
@@ -89,7 +89,7 @@ impl EnvironmentFlags {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::EnvironmentFlags;
+    /// use ultelier::sync_guest::EnvironmentFlags;
     ///
     /// let flags = EnvironmentFlags::default()
     ///     .with(EnvironmentFlags::TRIPLE_ENABLED, true)
@@ -120,7 +120,7 @@ impl BufferMode {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::BufferMode;
+    /// use ultelier::sync_guest::BufferMode;
     ///
     /// assert_eq!(BufferMode::from_u32(2), Some(BufferMode::Double));
     /// assert_eq!(BufferMode::from_u32(3), Some(BufferMode::Triple));
@@ -151,7 +151,7 @@ impl FrameIndexMode {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::FrameIndexMode;
+    /// use ultelier::sync_guest::FrameIndexMode;
     ///
     /// assert_eq!(FrameIndexMode::from_u32(1), Some(FrameIndexMode::Double));
     /// assert_eq!(FrameIndexMode::from_u32(4), Some(FrameIndexMode::Frozen));
@@ -182,7 +182,7 @@ impl IndexBackend {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::IndexBackend;
+    /// use ultelier::sync_guest::IndexBackend;
     ///
     /// assert_eq!(IndexBackend::from_u32(0), Some(IndexBackend::Dynamic));
     /// assert_eq!(IndexBackend::from_u32(1), Some(IndexBackend::Static));
@@ -234,7 +234,7 @@ impl OverclockProfile {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::OverclockProfile;
+    /// use ultelier::sync_guest::OverclockProfile;
     ///
     /// assert_eq!(
     ///     OverclockProfile::from_u32(2),
@@ -311,7 +311,7 @@ fn call_fill_struct<T: Default>(symbol: &'static [u8]) -> Option<T> {
 ///
 /// # Example
 /// ```ignore
-/// if !ssbusync_guest::remote_present() {
+/// if !ultelier::sync_guest::remote_present() {
 ///     skyline::println!("ssbusync is not loaded");
 /// }
 /// ```
@@ -323,7 +323,7 @@ pub fn remote_present() -> bool {
 ///
 /// # Example
 /// ```ignore
-/// if let Some(status) = ssbusync_guest::status() {
+/// if let Some(status) = ultelier::sync_guest::status() {
 ///     skyline::println!("ssbusync status = {status:#x}");
 /// }
 /// ```
@@ -335,9 +335,9 @@ pub fn status() -> Option<u32> {
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::EnvironmentFlags;
+/// use ultelier::sync_guest::EnvironmentFlags;
 ///
-/// if let Some(flags) = ssbusync_guest::env_flags() {
+/// if let Some(flags) = ultelier::sync_guest::env_flags() {
 ///     if flags.contains(EnvironmentFlags::TRIPLE_ENABLED) {
 ///         skyline::println!("triple buffering is active");
 ///     }
@@ -353,13 +353,13 @@ pub fn env_flags() -> Option<EnvironmentFlags> {
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::EnvironmentFlags;
+/// use ultelier::sync_guest::EnvironmentFlags;
 ///
 /// let desired = EnvironmentFlags::default()
 ///     .with(EnvironmentFlags::TRIPLE_ENABLED, true)
 ///     .with(EnvironmentFlags::VSYNC_DISABLED, false);
 ///
-/// let previous = ssbusync_guest::replace_env_flags(desired);
+/// let previous = ultelier::sync_guest::replace_env_flags(desired);
 /// ```
 pub fn replace_env_flags(flags: EnvironmentFlags) -> Option<EnvironmentFlags> {
     call_u32_u32(SSBUSYNC_ENV_REPLACE_FLAGS_SYMBOL, flags.bits()).map(EnvironmentFlags::new)
@@ -369,9 +369,9 @@ pub fn replace_env_flags(flags: EnvironmentFlags) -> Option<EnvironmentFlags> {
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::EnvironmentFlags;
+/// use ultelier::sync_guest::EnvironmentFlags;
 ///
-/// let updated = ssbusync_guest::set_env_flag(EnvironmentFlags::TRIPLE_ENABLED, true);
+/// let updated = ultelier::sync_guest::set_env_flag(EnvironmentFlags::TRIPLE_ENABLED, true);
 /// ```
 pub fn set_env_flag(mask: u32, enabled: bool) -> Option<EnvironmentFlags> {
     call_u32_u32_u32(SSBUSYNC_ENV_SET_FLAG_SYMBOL, mask, u32::from(enabled))
@@ -382,7 +382,7 @@ pub fn set_env_flag(mask: u32, enabled: bool) -> Option<EnvironmentFlags> {
 ///
 /// # Example
 /// ```ignore
-/// let applied = ssbusync_guest::set_vsync_enabled(false);
+/// let applied = ultelier::sync_guest::set_vsync_enabled(false);
 /// ```
 pub fn set_vsync_enabled(enabled: bool) -> Option<bool> {
     call_u32_u32(SSBUSYNC_SET_VSYNC_ENABLED_SYMBOL, u32::from(enabled)).map(|value| value != 0)
@@ -392,7 +392,7 @@ pub fn set_vsync_enabled(enabled: bool) -> Option<bool> {
 ///
 /// # Example
 /// ```ignore
-/// let applied = ssbusync_guest::set_pacer_enabled(true);
+/// let applied = ultelier::sync_guest::set_pacer_enabled(true);
 /// ```
 pub fn set_pacer_enabled(enabled: bool) -> Option<bool> {
     call_u32_u32(SSBUSYNC_SET_PACER_ENABLED_SYMBOL, u32::from(enabled)).map(|value| value != 0)
@@ -411,7 +411,7 @@ pub fn set_pacer_enabled(enabled: bool) -> Option<bool> {
 ///
 /// # Example
 /// ```ignore
-/// let applied = ssbusync_guest::set_triple_buffer_enabled(true);
+/// let applied = ultelier::sync_guest::set_triple_buffer_enabled(true);
 /// ```
 pub fn set_triple_buffer_enabled(enabled: bool) -> Option<bool> {
     call_u32_u32(
@@ -437,7 +437,7 @@ pub fn set_triple_buffer_enabled(enabled: bool) -> Option<bool> {
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::{self as sync, BufferMode};
+/// use ultelier::sync_guest::{self as sync, BufferMode};
 ///
 /// #[derive(Default)]
 /// struct BufferModeController {
@@ -488,9 +488,9 @@ pub fn set_frame_index_mode(mode: FrameIndexMode) -> Option<bool> {
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::IndexBackend;
+/// use ultelier::sync_guest::IndexBackend;
 ///
-/// let applied = ssbusync_guest::set_index_backend(IndexBackend::Dynamic);
+/// let applied = ultelier::sync_guest::set_index_backend(IndexBackend::Dynamic);
 /// ```
 pub fn set_index_backend(mode: IndexBackend) -> Option<bool> {
     call_u32_u32(SSBUSYNC_SET_INDEX_BACKEND_SYMBOL, mode as u32).map(|value| value != 0)
@@ -500,9 +500,9 @@ pub fn set_index_backend(mode: IndexBackend) -> Option<bool> {
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::OverclockProfile;
+/// use ultelier::sync_guest::OverclockProfile;
 ///
-/// let applied = ssbusync_guest::set_overclock_profile(OverclockProfile::PerformanceSingles);
+/// let applied = ultelier::sync_guest::set_overclock_profile(OverclockProfile::PerformanceSingles);
 /// ```
 pub fn set_overclock_profile(profile: OverclockProfile) -> Option<bool> {
     call_u32_u32(SSBUSYNC_SET_OVERCLOCK_PROFILE_SYMBOL, profile as u32).map(|value| value != 0)
@@ -515,7 +515,7 @@ pub fn set_overclock_profile(profile: OverclockProfile) -> Option<bool> {
 ///
 /// # Example
 /// ```ignore
-/// match ssbusync_guest::current_overclock_profile() {
+/// match ultelier::sync_guest::current_overclock_profile() {
 ///     Some(Some(profile)) => skyline::println!("active profile: {:?}", profile),
 ///     Some(None) => skyline::println!("active profile is unknown"),
 ///     None => skyline::println!("ssbusync is unavailable"),
@@ -531,7 +531,7 @@ pub fn current_overclock_profile() -> Option<Option<OverclockProfile>> {
 ///
 /// # Example
 /// ```ignore
-/// if ssbusync_guest::overclock_uses_safe_profiles() == Some(true) {
+/// if ultelier::sync_guest::overclock_uses_safe_profiles() == Some(true) {
 ///     skyline::println!("safe overclock profiles are enforced");
 /// }
 /// ```
@@ -543,7 +543,7 @@ pub fn overclock_uses_safe_profiles() -> Option<bool> {
 ///
 /// # Example
 /// ```ignore
-/// if let Some(status) = ssbusync_guest::current_nstuff_status() {
+/// if let Some(status) = ultelier::sync_guest::current_nstuff_status() {
 ///     skyline::println!(
 ///         "nstuff cpu={} gpu={} mem={}",
 ///         status.applied_cpu_hz,
@@ -564,7 +564,7 @@ pub fn current_nstuff_status() -> Option<NsTuffStatus> {
 ///
 /// # Example
 /// ```ignore
-/// if !ssbusync_guest::refresh_index() {
+/// if !ultelier::sync_guest::refresh_index() {
 ///     skyline::println!("could not refresh frame index state");
 /// }
 /// ```
@@ -576,7 +576,7 @@ pub fn refresh_index() -> bool {
 ///
 /// # Example
 /// ```ignore
-/// if let Some(mode) = ssbusync_guest::current_index_mode() {
+/// if let Some(mode) = ultelier::sync_guest::current_index_mode() {
 ///     skyline::println!("index mode: {:?}", mode);
 /// }
 /// ```
@@ -588,7 +588,7 @@ pub fn current_index_mode() -> Option<FrameIndexMode> {
 ///
 /// # Example
 /// ```ignore
-/// if let Some(backend) = ssbusync_guest::current_index_backend() {
+/// if let Some(backend) = ultelier::sync_guest::current_index_backend() {
 ///     skyline::println!("index backend: {:?}", backend);
 /// }
 /// ```
@@ -606,7 +606,7 @@ pub fn current_index_backend() -> Option<IndexBackend> {
 ///     skyline::println!("vsync enabled = {}", raw != 0);
 /// }
 ///
-/// let registered = ssbusync_guest::set_vsync_changed_callback(Some(on_vsync_changed));
+/// let registered = ultelier::sync_guest::set_vsync_changed_callback(Some(on_vsync_changed));
 /// ```
 pub fn set_vsync_changed_callback(callback: Option<StateCallback>) -> Option<bool> {
     call_callback_reg(SSBUSYNC_SET_VSYNC_CHANGED_CALLBACK_SYMBOL, callback).map(|value| value != 0)
@@ -616,7 +616,7 @@ pub fn set_vsync_changed_callback(callback: Option<StateCallback>) -> Option<boo
 ///
 /// # Example
 /// ```ignore
-/// let cleared = ssbusync_guest::clear_vsync_changed_callback();
+/// let cleared = ultelier::sync_guest::clear_vsync_changed_callback();
 /// ```
 pub fn clear_vsync_changed_callback() -> Option<bool> {
     set_vsync_changed_callback(None)
@@ -633,7 +633,7 @@ pub fn clear_vsync_changed_callback() -> Option<bool> {
 /// }
 ///
 /// let registered =
-///     ssbusync_guest::set_buffer_mode_changed_callback(Some(on_buffer_mode_changed));
+///     ultelier::sync_guest::set_buffer_mode_changed_callback(Some(on_buffer_mode_changed));
 /// ```
 pub fn set_buffer_mode_changed_callback(callback: Option<StateCallback>) -> Option<bool> {
     call_callback_reg(SSBUSYNC_SET_BUFFER_MODE_CHANGED_CALLBACK_SYMBOL, callback)
@@ -644,7 +644,7 @@ pub fn set_buffer_mode_changed_callback(callback: Option<StateCallback>) -> Opti
 ///
 /// # Example
 /// ```ignore
-/// let cleared = ssbusync_guest::clear_buffer_mode_changed_callback();
+/// let cleared = ultelier::sync_guest::clear_buffer_mode_changed_callback();
 /// ```
 pub fn clear_buffer_mode_changed_callback() -> Option<bool> {
     set_buffer_mode_changed_callback(None)
@@ -661,7 +661,7 @@ pub fn clear_buffer_mode_changed_callback() -> Option<bool> {
 /// }
 ///
 /// let registered =
-///     ssbusync_guest::set_index_backend_changed_callback(Some(on_index_backend_changed));
+///     ultelier::sync_guest::set_index_backend_changed_callback(Some(on_index_backend_changed));
 /// ```
 pub fn set_index_backend_changed_callback(callback: Option<StateCallback>) -> Option<bool> {
     call_callback_reg(SSBUSYNC_SET_INDEX_BACKEND_CHANGED_CALLBACK_SYMBOL, callback)
@@ -672,7 +672,7 @@ pub fn set_index_backend_changed_callback(callback: Option<StateCallback>) -> Op
 ///
 /// # Example
 /// ```ignore
-/// let cleared = ssbusync_guest::clear_index_backend_changed_callback();
+/// let cleared = ultelier::sync_guest::clear_index_backend_changed_callback();
 /// ```
 pub fn clear_index_backend_changed_callback() -> Option<bool> {
     set_index_backend_changed_callback(None)

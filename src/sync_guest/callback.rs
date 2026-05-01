@@ -16,7 +16,7 @@ impl<F: Copy> Callback<F> {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::callback::Callback;
+    /// use ultelier::sync_guest::callback::Callback;
     ///
     /// extern "C" fn on_event(_: u32) {}
     ///
@@ -31,7 +31,7 @@ impl<F: Copy> Callback<F> {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::callback::Callback;
+    /// use ultelier::sync_guest::callback::Callback;
     ///
     /// extern "C" fn on_event(_: u32) {}
     ///
@@ -46,7 +46,7 @@ impl<F: Copy> Callback<F> {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::callback::Callback;
+    /// use ultelier::sync_guest::callback::Callback;
     ///
     /// extern "C" fn on_event(_: u32) {}
     ///
@@ -64,7 +64,7 @@ impl<F: Copy> Callback<F> {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::callback::Callback;
+    /// use ultelier::sync_guest::callback::Callback;
     ///
     /// extern "C" fn on_event(_: u32) {}
     ///
@@ -79,7 +79,7 @@ impl<F: Copy> Callback<F> {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::callback::Callback;
+    /// use ultelier::sync_guest::callback::Callback;
     ///
     /// extern "C" fn first(_: u32) {}
     /// extern "C" fn second(_: u32) {}
@@ -96,7 +96,7 @@ impl<F: Copy> Callback<F> {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::callback::Callback;
+    /// use ultelier::sync_guest::callback::Callback;
     ///
     /// extern "C" fn on_event(_: u32) {}
     ///
@@ -112,7 +112,7 @@ impl<F: Copy> Callback<F> {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::callback::Callback;
+    /// use ultelier::sync_guest::callback::Callback;
     ///
     /// extern "C" fn on_event(_: u32) {}
     ///
@@ -128,7 +128,7 @@ impl<F: Copy> Callback<F> {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::callback::Callback;
+    /// use ultelier::sync_guest::callback::Callback;
     ///
     /// extern "C" fn add_one(value: u32) -> u32 {
     ///     value + 1

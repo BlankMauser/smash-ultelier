@@ -4,7 +4,7 @@ pub mod common;
 pub mod console;
 
 #[cfg(feature = "sync-guest")]
-pub use ssbusync_guest as sync_guest;
+pub mod sync_guest;
 
 #[cfg(feature = "plugin")]
 #[link(name = "imgui_smash")]

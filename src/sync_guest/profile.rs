@@ -1,5 +1,5 @@
-use crate::callback::Callback;
-use crate::OverclockProfile;
+use super::callback::Callback;
+use super::OverclockProfile;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::sync::Mutex;
 
@@ -21,7 +21,7 @@ impl DockedProfile {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::profile::DockedProfile;
+    /// use ultelier::sync_guest::profile::DockedProfile;
     ///
     /// assert_eq!(
     ///     DockedProfile::all(),
@@ -45,8 +45,8 @@ impl DockedProfileMap {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::profile::{DockedProfile, DockedProfileMap};
-    /// use ssbusync_guest::OverclockProfile;
+    /// use ultelier::sync_guest::profile::{DockedProfile, DockedProfileMap};
+    /// use ultelier::sync_guest::OverclockProfile;
     ///
     /// let map = DockedProfileMap::default();
     /// assert_eq!(
@@ -68,8 +68,8 @@ impl DockedProfileMap {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::profile::{DockedProfile, DockedProfileMap};
-    /// use ssbusync_guest::OverclockProfile;
+    /// use ultelier::sync_guest::profile::{DockedProfile, DockedProfileMap};
+    /// use ultelier::sync_guest::OverclockProfile;
     ///
     /// let map = DockedProfileMap::default();
     /// assert_eq!(
@@ -93,8 +93,8 @@ impl DockedProfileMap {
     ///
     /// # Example
     /// ```rust
-    /// use ssbusync_guest::profile::{DockedProfile, DockedProfileMap};
-    /// use ssbusync_guest::OverclockProfile;
+    /// use ultelier::sync_guest::profile::{DockedProfile, DockedProfileMap};
+    /// use ultelier::sync_guest::OverclockProfile;
     ///
     /// let mut map = DockedProfileMap::default();
     /// let previous = map.set(DockedProfile::Rest, OverclockProfile::PerformanceSingles);
@@ -182,7 +182,7 @@ fn invoke_changed_callback(state: DockedProfile) {
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::profile::{self, DockedProfile};
+/// use ultelier::sync_guest::profile::{self, DockedProfile};
 ///
 /// let map = profile::docked_profile_map();
 /// let singles_profile = map.profile_for(DockedProfile::Singles);
@@ -198,8 +198,8 @@ pub fn docked_profile_map() -> DockedProfileMap {
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::profile::{self, DockedProfileMap};
-/// use ssbusync_guest::OverclockProfile;
+/// use ultelier::sync_guest::profile::{self, DockedProfileMap};
+/// use ultelier::sync_guest::OverclockProfile;
 ///
 /// profile::set_docked_profile_map(DockedProfileMap {
 ///     rest: OverclockProfile::Rest,
@@ -216,8 +216,8 @@ pub fn set_docked_profile_map(map: DockedProfileMap) {
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::profile::{self, DockedProfile};
-/// use ssbusync_guest::OverclockProfile;
+/// use ultelier::sync_guest::profile::{self, DockedProfile};
+/// use ultelier::sync_guest::OverclockProfile;
 ///
 /// let previous = profile::set_docked_profile(
 ///     DockedProfile::Rest,
@@ -235,7 +235,7 @@ pub fn set_docked_profile(state: DockedProfile, profile: OverclockProfile) -> Ov
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::profile::{self, DockedProfile};
+/// use ultelier::sync_guest::profile::{self, DockedProfile};
 ///
 /// extern "C" fn on_profile_changed(state: DockedProfile) {
 ///     skyline::println!("docked profile changed to {:?}", state);
@@ -253,7 +253,7 @@ pub fn set_docked_profile_changed_callback(
 ///
 /// # Example
 /// ```ignore
-/// let previous = ssbusync_guest::profile::clear_docked_profile_changed_callback();
+/// let previous = ultelier::sync_guest::profile::clear_docked_profile_changed_callback();
 /// ```
 pub fn clear_docked_profile_changed_callback() -> Option<DockedProfileChangedCallback> {
     with_changed_callback(|slot| slot.clear())
@@ -266,7 +266,7 @@ pub fn clear_docked_profile_changed_callback() -> Option<DockedProfileChangedCal
 ///
 /// # Example
 /// ```ignore
-/// let cached = ssbusync_guest::profile::cached_docked_profile();
+/// let cached = ultelier::sync_guest::profile::cached_docked_profile();
 /// ```
 pub fn cached_docked_profile() -> Option<DockedProfile> {
     match CURRENT_STATE.load(Ordering::Acquire) {
@@ -281,7 +281,7 @@ pub fn cached_docked_profile() -> Option<DockedProfile> {
 ///
 /// # Example
 /// ```ignore
-/// let cached = ssbusync_guest::profile::cached_overclock_profile();
+/// let cached = ultelier::sync_guest::profile::cached_overclock_profile();
 /// ```
 pub fn cached_overclock_profile() -> Option<OverclockProfile> {
     OverclockProfile::from_u32(CURRENT_PROFILE.load(Ordering::Acquire))
@@ -291,7 +291,7 @@ pub fn cached_overclock_profile() -> Option<OverclockProfile> {
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::profile;
+/// use ultelier::sync_guest::profile;
 ///
 /// profile::invalidate_cache();
 /// assert_eq!(profile::cached_docked_profile(), None);
@@ -308,10 +308,10 @@ pub fn invalidate_cache() {
 ///
 /// # Example
 /// ```ignore
-/// let remote = ssbusync_guest::profile::sync_from_remote();
+/// let remote = ultelier::sync_guest::profile::sync_from_remote();
 /// ```
 pub fn sync_from_remote() -> Option<Option<OverclockProfile>> {
-    let result = crate::current_overclock_profile()?;
+    let result = super::current_overclock_profile()?;
     let state = result.and_then(|profile| docked_profile_map().state_for(profile));
     cache_state(state, result);
     Some(result)
@@ -325,7 +325,7 @@ pub fn sync_from_remote() -> Option<Option<OverclockProfile>> {
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::profile::{self, ApplyResult, DockedProfile};
+/// use ultelier::sync_guest::profile::{self, ApplyResult, DockedProfile};
 ///
 /// match profile::apply_docked_profile(DockedProfile::Singles) {
 ///     ApplyResult::Applied | ApplyResult::Unchanged => {}
@@ -351,7 +351,7 @@ pub fn apply_docked_profile(state: DockedProfile) -> ApplyResult {
         }
     }
 
-    match crate::set_overclock_profile(mapped) {
+    match super::set_overclock_profile(mapped) {
         Some(true) => {
             cache_state(Some(state), Some(mapped));
             invoke_changed_callback(state);
@@ -366,7 +366,7 @@ pub fn apply_docked_profile(state: DockedProfile) -> ApplyResult {
 ///
 /// # Example
 /// ```ignore
-/// let result = ssbusync_guest::profile::apply_rest();
+/// let result = ultelier::sync_guest::profile::apply_rest();
 /// ```
 pub fn apply_rest() -> ApplyResult {
     apply_docked_profile(DockedProfile::Rest)
@@ -376,7 +376,7 @@ pub fn apply_rest() -> ApplyResult {
 ///
 /// # Example
 /// ```ignore
-/// let result = ssbusync_guest::profile::apply_singles();
+/// let result = ultelier::sync_guest::profile::apply_singles();
 /// ```
 pub fn apply_singles() -> ApplyResult {
     apply_docked_profile(DockedProfile::Singles)
@@ -386,7 +386,7 @@ pub fn apply_singles() -> ApplyResult {
 ///
 /// # Example
 /// ```ignore
-/// let result = ssbusync_guest::profile::apply_ffa();
+/// let result = ultelier::sync_guest::profile::apply_ffa();
 /// ```
 pub fn apply_ffa() -> ApplyResult {
     apply_docked_profile(DockedProfile::Ffa)

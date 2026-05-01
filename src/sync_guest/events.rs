@@ -1,9 +1,10 @@
-use crate::callback::Callback;
+use super::callback::Callback;
+use super::{BufferMode, IndexBackend, StateCallback};
 use std::sync::Mutex;
 
 pub type TypedVsyncCallback = extern "C" fn(bool);
-pub type TypedBufferModeCallback = extern "C" fn(crate::BufferMode);
-pub type TypedIndexBackendCallback = extern "C" fn(crate::IndexBackend);
+pub type TypedBufferModeCallback = extern "C" fn(BufferMode);
+pub type TypedIndexBackendCallback = extern "C" fn(IndexBackend);
 
 static TYPED_VSYNC_CHANGED: Mutex<Callback<TypedVsyncCallback>> = Mutex::new(Callback::new(None));
 static TYPED_BUFFER_MODE_CHANGED: Mutex<Callback<TypedBufferModeCallback>> =
@@ -27,7 +28,7 @@ extern "C" fn vsync_changed_typed_thunk(enabled: u32) {
 }
 
 extern "C" fn buffer_mode_changed_typed_thunk(raw: u32) {
-    let Some(mode) = crate::BufferMode::from_u32(raw) else {
+    let Some(mode) = BufferMode::from_u32(raw) else {
         return;
     };
     with_typed_callback(&TYPED_BUFFER_MODE_CHANGED, |callback| {
@@ -36,7 +37,7 @@ extern "C" fn buffer_mode_changed_typed_thunk(raw: u32) {
 }
 
 extern "C" fn index_backend_changed_typed_thunk(raw: u32) {
-    let Some(mode) = crate::IndexBackend::from_u32(raw) else {
+    let Some(mode) = IndexBackend::from_u32(raw) else {
         return;
     };
     with_typed_callback(&TYPED_INDEX_BACKEND_CHANGED, |callback| {
@@ -54,9 +55,9 @@ pub enum SideEffectEvent {
 
 #[derive(Debug, Clone, Copy, Default)]
 pub struct SideEffectRegistry {
-    pub vsync_changed: Callback<crate::StateCallback>,
-    pub buffer_mode_changed: Callback<crate::StateCallback>,
-    pub index_backend_changed: Callback<crate::StateCallback>,
+    pub vsync_changed: Callback<StateCallback>,
+    pub buffer_mode_changed: Callback<StateCallback>,
+    pub index_backend_changed: Callback<StateCallback>,
 }
 
 impl SideEffectRegistry {
@@ -64,8 +65,8 @@ impl SideEffectRegistry {
     ///
     /// # Example
     /// ```ignore
-    /// use ssbusync_guest::callback::Callback;
-    /// use ssbusync_guest::events::SideEffectRegistry;
+    /// use ultelier::sync_guest::callback::Callback;
+    /// use ultelier::sync_guest::events::SideEffectRegistry;
     ///
     /// extern "C" fn on_vsync(_: u32) {}
     ///
@@ -79,14 +80,14 @@ impl SideEffectRegistry {
     pub fn register_remote(&self) -> bool {
         let mut ok = true;
         if self.vsync_changed.is_set() {
-            ok &= crate::set_vsync_changed_callback(self.vsync_changed.get()) == Some(true);
+            ok &= super::set_vsync_changed_callback(self.vsync_changed.get()) == Some(true);
         }
         if self.buffer_mode_changed.is_set() {
-            ok &= crate::set_buffer_mode_changed_callback(self.buffer_mode_changed.get())
+            ok &= super::set_buffer_mode_changed_callback(self.buffer_mode_changed.get())
                 == Some(true);
         }
         if self.index_backend_changed.is_set() {
-            ok &= crate::set_index_backend_changed_callback(self.index_backend_changed.get())
+            ok &= super::set_index_backend_changed_callback(self.index_backend_changed.get())
                 == Some(true);
         }
         ok
@@ -96,12 +97,12 @@ impl SideEffectRegistry {
     ///
     /// # Example
     /// ```ignore
-    /// let ok = ssbusync_guest::events::SideEffectRegistry::clear_remote();
+    /// let ok = ultelier::sync_guest::events::SideEffectRegistry::clear_remote();
     /// ```
     pub fn clear_remote() -> bool {
-        crate::clear_vsync_changed_callback() == Some(true)
-            && crate::clear_buffer_mode_changed_callback() == Some(true)
-            && crate::clear_index_backend_changed_callback() == Some(true)
+        super::clear_vsync_changed_callback() == Some(true)
+            && super::clear_buffer_mode_changed_callback() == Some(true)
+            && super::clear_index_backend_changed_callback() == Some(true)
     }
 }
 
@@ -114,20 +115,20 @@ impl SideEffectRegistry {
 ///     skyline::println!("vsync enabled = {}", raw != 0);
 /// }
 ///
-/// let ok = ssbusync_guest::events::set_vsync_changed(on_vsync_changed);
+/// let ok = ultelier::sync_guest::events::set_vsync_changed(on_vsync_changed);
 /// ```
-pub fn set_vsync_changed(callback: crate::StateCallback) -> bool {
-    crate::set_vsync_changed_callback(Some(callback)) == Some(true)
+pub fn set_vsync_changed(callback: StateCallback) -> bool {
+    super::set_vsync_changed_callback(Some(callback)) == Some(true)
 }
 
 /// Clears the raw vsync-change callback.
 ///
 /// # Example
 /// ```ignore
-/// let ok = ssbusync_guest::events::clear_vsync_changed();
+/// let ok = ultelier::sync_guest::events::clear_vsync_changed();
 /// ```
 pub fn clear_vsync_changed() -> bool {
-    crate::clear_vsync_changed_callback() == Some(true)
+    super::clear_vsync_changed_callback() == Some(true)
 }
 
 /// Registers a raw buffer-mode callback and returns whether registration
@@ -139,20 +140,20 @@ pub fn clear_vsync_changed() -> bool {
 ///     skyline::println!("buffer mode raw = {raw}");
 /// }
 ///
-/// let ok = ssbusync_guest::events::set_buffer_mode_changed(on_buffer_mode_changed);
+/// let ok = ultelier::sync_guest::events::set_buffer_mode_changed(on_buffer_mode_changed);
 /// ```
-pub fn set_buffer_mode_changed(callback: crate::StateCallback) -> bool {
-    crate::set_buffer_mode_changed_callback(Some(callback)) == Some(true)
+pub fn set_buffer_mode_changed(callback: StateCallback) -> bool {
+    super::set_buffer_mode_changed_callback(Some(callback)) == Some(true)
 }
 
 /// Clears the raw buffer-mode callback.
 ///
 /// # Example
 /// ```ignore
-/// let ok = ssbusync_guest::events::clear_buffer_mode_changed();
+/// let ok = ultelier::sync_guest::events::clear_buffer_mode_changed();
 /// ```
 pub fn clear_buffer_mode_changed() -> bool {
-    crate::clear_buffer_mode_changed_callback() == Some(true)
+    super::clear_buffer_mode_changed_callback() == Some(true)
 }
 
 /// Registers a raw index-backend callback and returns whether registration
@@ -164,20 +165,20 @@ pub fn clear_buffer_mode_changed() -> bool {
 ///     skyline::println!("index backend raw = {raw}");
 /// }
 ///
-/// let ok = ssbusync_guest::events::set_index_backend_changed(on_index_backend_changed);
+/// let ok = ultelier::sync_guest::events::set_index_backend_changed(on_index_backend_changed);
 /// ```
-pub fn set_index_backend_changed(callback: crate::StateCallback) -> bool {
-    crate::set_index_backend_changed_callback(Some(callback)) == Some(true)
+pub fn set_index_backend_changed(callback: StateCallback) -> bool {
+    super::set_index_backend_changed_callback(Some(callback)) == Some(true)
 }
 
 /// Clears the raw index-backend callback.
 ///
 /// # Example
 /// ```ignore
-/// let ok = ssbusync_guest::events::clear_index_backend_changed();
+/// let ok = ultelier::sync_guest::events::clear_index_backend_changed();
 /// ```
 pub fn clear_index_backend_changed() -> bool {
-    crate::clear_index_backend_changed_callback() == Some(true)
+    super::clear_index_backend_changed_callback() == Some(true)
 }
 
 /// Registers a typed `bool` callback for vsync changes.
@@ -188,88 +189,88 @@ pub fn clear_index_backend_changed() -> bool {
 ///     skyline::println!("vsync enabled = {enabled}");
 /// }
 ///
-/// let ok = ssbusync_guest::events::set_typed_vsync_changed(on_vsync_changed);
+/// let ok = ultelier::sync_guest::events::set_typed_vsync_changed(on_vsync_changed);
 /// ```
 pub fn set_typed_vsync_changed(callback: TypedVsyncCallback) -> bool {
     with_typed_callback(&TYPED_VSYNC_CHANGED, |slot| {
         let _ = slot.set(callback);
     });
-    crate::set_vsync_changed_callback(Some(vsync_changed_typed_thunk)) == Some(true)
+    super::set_vsync_changed_callback(Some(vsync_changed_typed_thunk)) == Some(true)
 }
 
 /// Clears the typed vsync callback.
 ///
 /// # Example
 /// ```ignore
-/// let ok = ssbusync_guest::events::clear_typed_vsync_changed();
+/// let ok = ultelier::sync_guest::events::clear_typed_vsync_changed();
 /// ```
 pub fn clear_typed_vsync_changed() -> bool {
     with_typed_callback(&TYPED_VSYNC_CHANGED, |slot| {
         let _ = slot.clear();
     });
-    crate::clear_vsync_changed_callback() == Some(true)
+    super::clear_vsync_changed_callback() == Some(true)
 }
 
 /// Registers a typed `BufferMode` callback for buffer-mode changes.
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::BufferMode;
+/// use ultelier::sync_guest::BufferMode;
 ///
 /// extern "C" fn on_buffer_mode_changed(mode: BufferMode) {
 ///     skyline::println!("buffer mode = {:?}", mode);
 /// }
 ///
-/// let ok = ssbusync_guest::events::set_typed_buffer_mode_changed(on_buffer_mode_changed);
+/// let ok = ultelier::sync_guest::events::set_typed_buffer_mode_changed(on_buffer_mode_changed);
 /// ```
 pub fn set_typed_buffer_mode_changed(callback: TypedBufferModeCallback) -> bool {
     with_typed_callback(&TYPED_BUFFER_MODE_CHANGED, |slot| {
         let _ = slot.set(callback);
     });
-    crate::set_buffer_mode_changed_callback(Some(buffer_mode_changed_typed_thunk)) == Some(true)
+    super::set_buffer_mode_changed_callback(Some(buffer_mode_changed_typed_thunk)) == Some(true)
 }
 
 /// Clears the typed buffer-mode callback.
 ///
 /// # Example
 /// ```ignore
-/// let ok = ssbusync_guest::events::clear_typed_buffer_mode_changed();
+/// let ok = ultelier::sync_guest::events::clear_typed_buffer_mode_changed();
 /// ```
 pub fn clear_typed_buffer_mode_changed() -> bool {
     with_typed_callback(&TYPED_BUFFER_MODE_CHANGED, |slot| {
         let _ = slot.clear();
     });
-    crate::clear_buffer_mode_changed_callback() == Some(true)
+    super::clear_buffer_mode_changed_callback() == Some(true)
 }
 
 /// Registers a typed `IndexBackend` callback for index-backend changes.
 ///
 /// # Example
 /// ```ignore
-/// use ssbusync_guest::IndexBackend;
+/// use ultelier::sync_guest::IndexBackend;
 ///
 /// extern "C" fn on_index_backend_changed(mode: IndexBackend) {
 ///     skyline::println!("index backend = {:?}", mode);
 /// }
 ///
-/// let ok = ssbusync_guest::events::set_typed_index_backend_changed(on_index_backend_changed);
+/// let ok = ultelier::sync_guest::events::set_typed_index_backend_changed(on_index_backend_changed);
 /// ```
 pub fn set_typed_index_backend_changed(callback: TypedIndexBackendCallback) -> bool {
     with_typed_callback(&TYPED_INDEX_BACKEND_CHANGED, |slot| {
         let _ = slot.set(callback);
     });
-    crate::set_index_backend_changed_callback(Some(index_backend_changed_typed_thunk)) == Some(true)
+    super::set_index_backend_changed_callback(Some(index_backend_changed_typed_thunk)) == Some(true)
 }
 
 /// Clears the typed index-backend callback.
 ///
 /// # Example
 /// ```ignore
-/// let ok = ssbusync_guest::events::clear_typed_index_backend_changed();
+/// let ok = ultelier::sync_guest::events::clear_typed_index_backend_changed();
 /// ```
 pub fn clear_typed_index_backend_changed() -> bool {
     with_typed_callback(&TYPED_INDEX_BACKEND_CHANGED, |slot| {
         let _ = slot.clear();
     });
-    crate::clear_index_backend_changed_callback() == Some(true)
+    super::clear_index_backend_changed_callback() == Some(true)
 }
