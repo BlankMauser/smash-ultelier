@@ -183,6 +183,7 @@ name = "ssbusync-guest"
 version = "0.1.0"
 dependencies = [
  "skyline",
+ "ultelier-macros",
 ]
 
 [[package]]
@@ -204,6 +205,15 @@ dependencies = [
  "nsuite",
  "skyline",
  "ssbusync-guest",
+]
+
+[[package]]
+name = "ultelier-macros"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]

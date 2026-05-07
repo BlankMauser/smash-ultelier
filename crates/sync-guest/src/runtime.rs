@@ -81,7 +81,7 @@ fn store_css_player_count(raw: u32) {
     LAST_CSS_PLAYER_COUNT.store(clamp_player_count(raw), Ordering::Release);
 }
 
-#[skyline::hook(offset = 0x1a26200)]
+#[ultelier_macros::local_hook(offset = 0x1a26200)]
 unsafe fn css_player_count_changed(param_1: i64, prev_num: i32, changed_by_player: u32) {
     call_original!(param_1, prev_num, changed_by_player);
     let count = *((param_1 + CSS_CURRENT_PLAYER_COUNT_OFFSET as i64) as *const u32);
@@ -90,19 +90,19 @@ unsafe fn css_player_count_changed(param_1: i64, prev_num: i32, changed_by_playe
     let _ = profile::apply_rest();
 }
 
-#[skyline::hook(offset = 0x1345558, inline)]
+#[ultelier_macros::local_hook(offset = 0x1345558, inline)]
 unsafe fn on_match_start(_: &InlineCtx) {
     IN_MATCH.store(true, Ordering::Release);
     apply_runtime_profile();
 }
 
-#[skyline::hook(offset = 0x1d68b94, inline)]
+#[ultelier_macros::local_hook(offset = 0x1d68b94, inline)]
 unsafe fn on_match_end(_: &InlineCtx) {
     IN_MATCH.store(false, Ordering::Release);
     let _ = profile::apply_rest();
 }
 
-#[skyline::hook(offset = 0x235a650, inline)]
+#[ultelier_macros::local_hook(offset = 0x235a650, inline)]
 unsafe fn on_main_menu(_: &InlineCtx) {
     IN_MATCH.store(false, Ordering::Release);
     let _ = profile::apply_rest();

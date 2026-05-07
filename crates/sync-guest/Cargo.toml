@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 skyline = { git = "https://github.com/ultimate-research/skyline-rs" }
+ultelier-macros = { path = "../ultelier-macros" }
