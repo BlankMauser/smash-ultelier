@@ -311,10 +311,25 @@ pub fn invalidate_cache() {
 /// let remote = ultelier::sync_guest::profile::sync_from_remote();
 /// ```
 pub fn sync_from_remote() -> Option<Option<OverclockProfile>> {
+    if remote_overclocker_enabled() != Some(true) {
+        invalidate_cache();
+        return None;
+    }
+
     let result = crate::current_overclock_profile()?;
     let state = result.and_then(|profile| docked_profile_map().state_for(profile));
     cache_state(state, result);
     Some(result)
+}
+
+/// Returns whether the remote ssbusync runtime currently advertises
+/// overclocker support.
+///
+/// This is `Some(false)` when ssbusync is present but disabled overclock
+/// control after probing the service, and `None` when ssbusync itself is not
+/// available.
+pub fn remote_overclocker_enabled() -> Option<bool> {
+    crate::env_flags().map(|flags| flags.contains(crate::EnvironmentFlags::OVERCLOCKER))
 }
 
 /// Applies the overclock profile mapped to the requested docked state.
@@ -334,6 +349,11 @@ pub fn sync_from_remote() -> Option<Option<OverclockProfile>> {
 /// }
 /// ```
 pub fn apply_docked_profile(state: DockedProfile) -> ApplyResult {
+    if remote_overclocker_enabled() != Some(true) {
+        invalidate_cache();
+        return ApplyResult::RemoteUnavailable;
+    }
+
     let mapped = docked_profile_map().profile_for(state);
     if cached_state_matches(state, mapped) {
         return ApplyResult::Unchanged;
