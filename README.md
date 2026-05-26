@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> THIS REPO IS BEING DEPRECATED AND THE LATEST VERSION HAS MOVED TO https://github.com/project-ultelier/smash-ultelier/releases/tag/v1.0.0-beta.1
+> THIS REPO IS BEING DEPRECATED AND THE LATEST VERSION HAS MOVED TO https://github.com/project-ultelier/smash-ultelier
 
 Smash Ultelier is primarily an interface for smash plugins to the game's render loop but will hopefully grow into a tool for quicker reverse engineering of smash ultimate data structs.
 
